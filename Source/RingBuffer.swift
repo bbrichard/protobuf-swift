@@ -56,13 +56,12 @@ internal struct Buffer {
         var aLength = length
         var aOffset = offset
         var inputs = [UInt8](input)
-//        let pointer = UnsafeMutablePointerUInt8From(data: buffer)
         if position >= tail {
             totalWritten = min(buffer.count - position, aLength)
-            memcpy(&buffer + Int(position), &inputs + Int(aOffset), Int(totalWritten))
-//            buffer[position..<(position+totalWritten)] = input[aOffset..<input.count]
-            
-//            input.copyBytes(to: pointer + position, from: aOffset..<aOffset + totalWritten)
+            let a: UnsafeMutableRawPointer = &buffer + Int(position)
+            let b: UnsafeMutableRawPointer = &inputs + Int(aOffset)
+            memcpy(a, b, Int(totalWritten))
+
             position += totalWritten
             
             if totalWritten == aLength {
@@ -85,9 +84,9 @@ internal struct Buffer {
         
         let written = min(freeSpaces, aLength)
         
-        memcpy(&buffer + position, &inputs + Int(aOffset), Int(written))
-        
-//        input.copyBytes(to: pointer + position, from: aOffset..<aOffset + written)
+        let c: UnsafeMutableRawPointer = &buffer + position
+        let d: UnsafeMutableRawPointer = &inputs + Int(aOffset)
+        memcpy(c, d, Int(written))
         position += written
         totalWritten += written
         
